@@ -60,10 +60,12 @@ class UsersRoles(db.Model):
 
 # Define the User profile form
 class UserProfileForm(FlaskForm):
-    first_name = StringField('First name', validators=[
-        validators.DataRequired('First name is required')])
-    last_name = StringField('Last name', validators=[
-        validators.DataRequired('Last name is required')])
+    username = StringField('Username', validators=[
+        validators.DataRequired('Username is required')])
+    #last_name = StringField('Last name', validators=[
+    #    validators.DataRequired('Last name is required')])
+    pk = StringField('Public Key', validators=[
+        validators.DataRequired('Public Key is required')])
     submit = SubmitField('Save')
 
 
