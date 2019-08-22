@@ -34,9 +34,7 @@
         {{ render_field(form.email, tabindex=220) }}
     {% endif %}
 
-    {% if user_manager.USER_ENABLE_PK %}
-        {{ render_field(form.pk, tabindex=220)}}
-    {%endif%}
+    {{ render_field(form.pk, tabindex=220)}}
 
     {{ render_field(form.password, tabindex=230) }}
 

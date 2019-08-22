@@ -19,6 +19,12 @@ db = SQLAlchemy()
 mail = Mail()
 migrate = Migrate()
 
+
+class CustomUserManager(UserManager):
+    def customize(self, app):
+        from .models.user_models import MyRegisterForm
+        self.RegisterFormClass = MyRegisterForm
+
 # Initialize Flask Application
 def create_app(extra_config_settings={}):
     """Create a Flask application.
@@ -65,7 +71,7 @@ def create_app(extra_config_settings={}):
     from .views.main_views import user_profile_page
 
     # Setup Flask-User
-    user_manager = UserManager(app, db, User)
+    user_manager = CustomUserManager(app, db, User)
 
     @app.context_processor
     def context_processor():

@@ -8,7 +8,7 @@ from flask_wtf import FlaskForm
 from wtforms import StringField, SubmitField, validators
 from app import db
 
-#from flask_app import app
+# from flask_app import app
 
 # Define the User data model. Make sure to add the flask_user.UserMixin !!
 class User(db.Model, UserMixin):
@@ -49,39 +49,20 @@ class UsersRoles(db.Model):
     role_id = db.Column(db.Integer(), db.ForeignKey('roles.id', ondelete='CASCADE'))
 
 
- # Define the User registration form
- # It augments the Flask-User RegisterForm with additional fields
-# class MyRegisterForm(RegisterForm):
-#     first_name = StringField('First name', validators=[
-#         validators.DataRequired('First name is required')])
-#     last_name = StringField('Last name', validators=[
-#         validators.DataRequired('Last name is required')])
+# Define the User registration form
+# It augments the Flask-User RegisterForm with additional fields
+class MyRegisterForm(RegisterForm):
+    pk = StringField('pk', validators=[
+        validators.DataRequired('pk is required')])
 
 
 # Define the User profile form
 class UserProfileForm(FlaskForm):
     username = StringField('Username', validators=[
         validators.DataRequired('Username is required')])
-    #last_name = StringField('Last name', validators=[
+    # last_name = StringField('Last name', validators=[
     #    validators.DataRequired('Last name is required')])
     pk = StringField('Public Key', validators=[
         validators.DataRequired('Public Key is required')])
     submit = SubmitField('Save')
-
-
-# class CustomUserManager(UserManager):
-
-#     def customize(self, app):
-
-#         # Configure customized forms
-#         self.RegisterFormClass = CustomRegisterForm
-#         #self.UserProfileFormClass = CustomUserProfileForm
-#         # NB: assign:  xyz_form = XyzForm   -- the class!
-#         #   (and not:  xyz_form = XyzForm() -- the instance!)
-
-# # Setup Flask-User
-#user_manager = (app, db, User)
-#user_manager = UserManager(app, db, User)
-
-
 
