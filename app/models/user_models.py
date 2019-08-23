@@ -23,6 +23,9 @@ class User(db.Model, UserMixin):
     active = db.Column(db.Boolean(), nullable=False, server_default='0')
     pk = db.Column(db.String(255), nullable=False, server_default='')
 
+    org_name = db.Column(db.String(255), nullable=False, server_default='')
+    org_id = db.Column(db.String(255), nullable=False, server_default='')
+
     # User information
     active = db.Column('is_active', db.Boolean(), nullable=False, server_default='0')
     first_name = db.Column(db.Unicode(50), nullable=False, server_default=u'')
@@ -52,6 +55,12 @@ class UsersRoles(db.Model):
 # Define the User registration form
 # It augments the Flask-User RegisterForm with additional fields
 class MyRegisterForm(RegisterForm):
+    org_name = StringField('Organization Name', validators=[
+        validators.DataRequired('Name is required')])
+
+    org_id = StringField('Organization ID', validators=[
+        validators.DataRequired('ID is required')])
+
     pk = StringField('pk', validators=[
         validators.DataRequired('pk is required')])
 
@@ -62,7 +71,15 @@ class UserProfileForm(FlaskForm):
         validators.DataRequired('Username is required')])
     # last_name = StringField('Last name', validators=[
     #    validators.DataRequired('Last name is required')])
+
+    org_name = StringField('Organization Name', validators=[
+        validators.DataRequired('Username is required')])
+
+    org_id = StringField('Organization ID', validators=[
+        validators.DataRequired('ID is required')])
+
     pk = StringField('Public Key', validators=[
         validators.DataRequired('Public Key is required')])
     submit = SubmitField('Save')
+
 

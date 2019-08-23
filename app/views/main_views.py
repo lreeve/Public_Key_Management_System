@@ -80,4 +80,25 @@ def register_view():
                   register_form=register_form)
 
 
+@main_blueprint.route('/user/revoke_key', methods=['GET', 'POST'])
+@login_required
+def revoke_key():
+    """ Remove user's key from database."""
+    self = app.user_manager
+
+    # Change user's key to empty string
+    username = current_user.query.filter_by(username=current_user.username).first()
+    username.pk = ''
+    self.db_manager.commit()
+    flash("Successfully revoked public key")
+
+    # Return to Home Page
+    return home_page()
+
+
+#@main_blueprint.route('/public_keys')
+#def get_keys():
+#    all_users = User.all()
+#    return users_schema.dump(all_users)
+
 
