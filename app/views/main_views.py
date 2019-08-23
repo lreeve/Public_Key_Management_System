@@ -4,11 +4,12 @@
 
 
 from flask import Blueprint, redirect, render_template
-from flask import request, url_for
+from flask import request, url_for, flash
 from flask_user import current_user, login_required, roles_required
 
 from app import db
 from app.models.user_models import UserProfileForm
+from flask import current_app as app
 
 main_blueprint = Blueprint('main', __name__, template_folder='templates')
 
@@ -52,5 +53,31 @@ def user_profile_page():
     # Process GET or invalid POST
     return render_template('main/user_profile_page.html',
                            form=form)
+
+
+@main_blueprint.route('/user/register', methods=['GET', 'POST'])
+@roles_required('admin')
+def register_view():
+    self = app.user_manager
+    """ Display registration form and create new User."""
+    register_form = self.RegisterFormClass(request.form)  # for register.html
+
+    # Process valid POST
+    if request.method == 'POST' and register_form.validate():
+        user = self.db_manager.add_user()
+        register_form.populate_obj(user)
+        # Store password hash instead of password
+        user.password = self.hash_password(user.password)
+
+        self.db_manager.save_user_and_user_email(user, None)
+        self.db_manager.commit()
+        flash("Successfully registered user: " + user.username, 'success')
+
+    # Render form
+    self.prepare_domain_translations()
+    return render_template(self.USER_REGISTER_TEMPLATE,
+                  form=register_form,
+                  register_form=register_form)
+
 
 
