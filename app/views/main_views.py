@@ -6,10 +6,10 @@
 from flask import Blueprint, redirect, render_template
 from flask import request, url_for, flash
 from flask_user import current_user, login_required, roles_required
-
 from app import db
-from app.models.user_models import UserProfileForm
+from app.models.user_models import User, UserProfileForm
 from flask import current_app as app
+import json
 
 main_blueprint = Blueprint('main', __name__, template_folder='templates')
 
@@ -96,9 +96,18 @@ def revoke_key():
     return home_page()
 
 
-#@main_blueprint.route('/public_keys')
-#def get_keys():
-#    all_users = User.all()
-#    return users_schema.dump(all_users)
+@main_blueprint.route('/public_keys')
+def get_keys():
+    # Formatted as such:
+    # { org_name: {id: "", pk: ""}
+    users = User.query.all()
+    pub_keys = {}
+    for u in users:
+        pub_keys.update(
+            {u.org_name : {
+            "id": u.org_id,
+            "pk": u.pk
+        }})
+    return json.dumps(pub_keys)
 
 
