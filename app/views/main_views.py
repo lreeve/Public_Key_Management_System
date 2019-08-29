@@ -7,9 +7,11 @@ from flask import Blueprint, redirect, render_template
 from flask import request, url_for, flash
 from flask_user import current_user, login_required, roles_required
 from app import db
-from app.models.user_models import User, UserProfileForm
+from app.models.user_models import User, UserProfileForm, RevokedKeys
 from flask import current_app as app
 import json
+import time
+import datetime
 
 main_blueprint = Blueprint('main', __name__, template_folder='templates')
 
@@ -88,26 +90,49 @@ def revoke_key():
 
     # Change user's key to empty string
     username = current_user.query.filter_by(username=current_user.username).first()
+    current_user.revoked_keys.append(RevokedKeys(
+            timestamp=datetime.datetime.fromtimestamp(time.time()).strftime('%Y-%m-%d %H:%M:%S'), 
+            key=current_user.pk))
     username.pk = ''
     self.db_manager.commit()
-    flash("Successfully revoked public key")
+    #flash("Successfully revoked public key")
 
     # Return to Home Page
-    return home_page()
+    return redirect(url_for('main.home_page'))
 
 
 @main_blueprint.route('/public_keys')
+#@login_required
 def get_keys():
     # Formatted as such:
     # { org_name: {id: "", pk: ""}
     users = User.query.all()
-    pub_keys = {}
+    pub_keys = []
+    #roles = [role.name for role in user.roles]
     for u in users:
-        pub_keys.update(
-            {u.org_name : {
+        pub_keys.append(
+            {"name": u.org_name,
             "id": u.org_id,
             "pk": u.pk
-        }})
+        })
     return json.dumps(pub_keys)
+
+
+@main_blueprint.route('/revoked_keys')
+def revoked_keys():
+    users = User.query.all()
+    revoked = []
+    for u in users:
+        revoked.append(
+            {"name": u.org_name,
+            "id": u.org_id,
+            "revoked_keys": [(r.timestamp, r.key) for r in u.revoked_keys]
+        })
+    return json.dumps(revoked)
+
+
+
+
+
 
 
